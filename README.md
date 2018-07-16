@@ -25,7 +25,7 @@ Check that it is running:
 
 Now force the handoff to the other node:
 
-    iex> TakeoverDemo
+    iex> TakeoverDemo.force_handoff()
     16:37:10.892 [warn]  Performing forced handoff for :one
     [:ok]
 
@@ -41,3 +41,15 @@ And verify that the pid has changed:
 Notice that the counter keeps its value, and keeps increasing! So the
 genserver has moved to the other node, while keeping its state. Bingo
 :-)
+
+## Automatic handover on node shutdown
+
+Not featured in this demo, but the
+[graceful_stop](https://github.com/botsquad/graceful_stop) package can
+catch the SIGTERM signal when a node is shutdown, so if you add that
+package and the following config, the running processes will be
+migrated to other in the cluster upon shutdown:
+
+    config :graceful_stop, :hooks, [
+      [TakeoverDemo, :force_handoff, []]
+    ]
